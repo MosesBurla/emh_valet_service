@@ -1,4 +1,5 @@
 const Request = require('../models/Request');
+const Vehicle = require('../models/Vehicle');
 const { getIO } = require('../utils/socket');  // destructure directly
 
 const getIncomingRequests = async (req, res) => {
@@ -31,7 +32,7 @@ const markParked = async (req, res) => {
     request.status = 'completed';
     request.completionTime = new Date();
     await request.save();
-    io.emit('request-completed', request);
+    getIO().emit('request-completed', request);
     res.json({ msg: 'Request marked as parked' });
   } catch (err) {
     res.status(500).json({ msg: err.message });
@@ -45,7 +46,10 @@ const markHandedOver = async (req, res) => {
     request.status = 'handed_over';
     request.handoverTime = new Date();
     await request.save();
-    io.emit('request-handed-over', request);
+    const vehicle = await Vehicle.findById(request.vehicleId);
+    vehicle.status = 'available';
+    await vehicle.save();
+    getIO().emit('request-handed-over', request);
     res.json({ msg: 'Request marked as handed over' });
   } catch (err) {
     res.status(500).json({ msg: err.message });
