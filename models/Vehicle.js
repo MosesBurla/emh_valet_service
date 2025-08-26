@@ -7,7 +7,7 @@ const vehicleSchema = new mongoose.Schema({
   number: { type: String, required: true, unique: true },
   color: { type: String },
   photoUrl: { type: String },
-  status: { type: String, enum: ['available', 'parked'], default: 'available' },
+  status: { type: String, enum: ['available', 'parked','in-progress'], default: 'available' },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Vehicle', vehicleSchema);

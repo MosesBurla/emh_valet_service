@@ -18,6 +18,9 @@ const acceptRequest = async (req, res) => {
     request.driverId = req.user.id;
     request.status = 'accepted';
     await request.save();
+    const vehicle = await Vehicle.findById(request.vehicleId);
+    vehicle.status = 'in-progress';
+    await vehicle.save();
     getIO().emit('request-accepted', request);
     res.json({ msg: 'Request accepted' });
   } catch (err) {
@@ -32,6 +35,9 @@ const markParked = async (req, res) => {
     request.status = 'completed';
     request.completionTime = new Date();
     await request.save();
+    const vehicle = await Vehicle.findById(request.vehicleId);
+    vehicle.status = 'parked';
+    await vehicle.save();
     getIO().emit('request-completed', request);
     res.json({ msg: 'Request marked as parked' });
   } catch (err) {
