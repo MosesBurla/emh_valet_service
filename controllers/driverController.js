@@ -64,11 +64,64 @@ const markHandedOver = async (req, res) => {
 
 const getHistory = async (req, res) => {
   try {
-    const history = await Request.find({ driverId: req.user.id }).populate('vehicleId ownerId');
+
+    // Define the start and end of the current day
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0); // Start of current day
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999); // End of current day
+
+    const history = await Request.find({ 
+      driverId: req.user.id,
+    status:'accepted',
+      createdAt: { $gte: startOfDay, $lte: endOfDay },}
+    
+    ).populate('vehicleId ownerId');
     res.json(history);
   } catch (err) {
     res.status(500).json({ msg: err.message });
   }
 };
 
-module.exports = { getIncomingRequests, acceptRequest, markParked, markHandedOver, getHistory };
+const getVehicles = async (req, res) => {
+  try {
+    const vehicles = await Vehicle.find({  status:'parked'});
+    res.json(vehicles);
+  } catch (err) {
+    res.status(500).json({ msg: err.message });
+  }
+};
+
+
+// const getHistory = async (req, res) => {
+//   try {
+//     // Define the start and end of the current day
+//     const startOfDay = new Date();
+//     startOfDay.setHours(0, 0, 0, 0); // Start of current day
+//     const endOfDay = new Date();
+//     endOfDay.setHours(23, 59, 59, 999); // End of current day
+
+//     // Find requests of type 'park' for the current driver on the current day
+//     const parkedRequests = await Request.find({
+//       driverId: req.user.id,
+//       type: 'park',
+//       createdAt: { $gte: startOfDay, $lte: endOfDay },
+//     }).populate('vehicleId');
+
+//     // Extract vehicle IDs from parked requests
+//     const vehicleIds = parkedRequests.map((request) => request.vehicleId._id);
+
+//     // Fetch vehicles with status 'parked' and matching IDs
+//     const parkedVehicles = await Vehicle.find({
+//       _id: { $in: vehicleIds },
+//       status: 'parked',
+//     }).populate('ownerId');
+
+//     res.json(parkedVehicles);
+//   } catch (err) {
+//     res.status(500).json({ msg: err.message });
+//   }
+// };
+
+
+module.exports = { getIncomingRequests, acceptRequest, markParked, markHandedOver, getHistory,getVehicles };
