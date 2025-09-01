@@ -15,5 +15,6 @@ router.post('/add-parking-location', adminController.addParkingLocation);
 router.put('/edit-parking-location/:id', adminController.editParkingLocation);
 router.delete('/delete-parking-location/:id', adminController.deleteParkingLocation);
 router.get('/statistics', adminController.getStatistics);
+router.get('/parking-locations', adminController.getParkingLocations); 
 
 module.exports = router;

@@ -6,7 +6,7 @@ const { notifier } = require('../utils/notifier');
 
 const getPendingRegistrations = async (req, res) => {
   try {
-    const pendings = await User.find({ status: 'pending' }).select('-password');
+    const pendings = await User.find({ status: 'approved' }).select('-password');
     res.json(pendings);
   } catch (err) {
     res.status(500).json({ msg: err.message });
@@ -91,5 +91,13 @@ const getStatistics = async (req, res) => {
     res.status(500).json({ msg: err.message });
   }
 };
+const getParkingLocations = async (req, res) => {
+  try {
+    const locations = await ParkingLocation.find();
+    res.json(locations);
+  } catch (err) {
+    res.status(500).json({ msg: err.message });
+  }
+};
 
-module.exports = { getPendingRegistrations, approveUser, rejectUser, editUser, addParkingLocation, editParkingLocation, deleteParkingLocation, getStatistics };
+module.exports = { getPendingRegistrations, approveUser, rejectUser, editUser, addParkingLocation, editParkingLocation, deleteParkingLocation, getStatistics, getParkingLocations };

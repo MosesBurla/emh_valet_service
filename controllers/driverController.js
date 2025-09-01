@@ -1,5 +1,6 @@
 const Request = require('../models/Request');
 const Vehicle = require('../models/Vehicle');
+const ParkingLocation = require('../models/ParkingLocation');
 const { getIO } = require('../utils/socket');  // destructure directly
 
 const getIncomingRequests = async (req, res) => {
@@ -122,6 +123,14 @@ const getVehicles = async (req, res) => {
 //     res.status(500).json({ msg: err.message });
 //   }
 // };
+const getParkingLocations = async (req, res) => {
+  try {
+    const locations = await ParkingLocation.find();
+    res.json(locations);
+  } catch (err) {
+    res.status(500).json({ msg: err.message });
+  }
+};
 
 
-module.exports = { getIncomingRequests, acceptRequest, markParked, markHandedOver, getHistory,getVehicles };
+module.exports = { getParkingLocations,getIncomingRequests, acceptRequest, markParked, markHandedOver, getHistory,getVehicles };
