@@ -16,6 +16,7 @@ app.use('/api/admin', require('./routes/adminRoutes'));
 app.use('/api/driver', require('./routes/driverRoutes'));
 app.use('/api/owner', require('./routes/ownerRoutes'));
 app.use('/api/supervisor', require('./routes/supervisorRoutes'));
+app.use('/api/common', require('./routes/commonRoutes'));
 
 app.use(errorHandler);
 

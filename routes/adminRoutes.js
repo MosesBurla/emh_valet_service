@@ -8,6 +8,7 @@ router.use(protect);
 router.use(rbac(['admin']));
 
 router.get('/pending-registrations', adminController.getPendingRegistrations);
+router.get('/get-all-users', adminController.getAllUsers);
 router.post('/approve-user/:id', adminController.approveUser);
 router.post('/reject-user/:id', adminController.rejectUser);
 router.put('/edit-user/:id', adminController.editUser);

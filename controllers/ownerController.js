@@ -33,7 +33,7 @@ const createParkRequest = async (req, res) => {
 
     const request = new Request({ vehicleId, ownerId: req.user.id, type: 'park', locationFrom });
     await request.save();
-    vehicle.status = 'parked';
+    vehicle.status = 'in-progress';
     await vehicle.save();
     getIO().emit('new-request', request);
     res.json(request);
