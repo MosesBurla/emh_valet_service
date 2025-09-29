@@ -13,7 +13,7 @@ router.post('/park-request', ownerController.createParkRequest);
 router.post('/pickup-request', ownerController.createPickupRequest);
 router.post('/submit-feedback/:requestId', ownerController.submitFeedback);
 router.get('/request-status/:id', ownerController.getRequestStatus);
-router.get('/vehicle-request/:id', ownerController.getLastRequestByVehicle);
+router.get('/vehicle-request/:vehicleId', ownerController.getLastRequestByVehicle);
 
 
 module.exports = router;
