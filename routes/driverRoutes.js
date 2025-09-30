@@ -12,6 +12,6 @@ router.post('/accept-request/:id', driverController.acceptRequest);
 router.post('/mark-parked/:id', driverController.markParked);
 router.post('/mark-handed-over/:id', driverController.markHandedOver);
 router.get('/history', driverController.getHistory); 
-router.get('/getParkedVehicles', driverController.getVehicles); 
+router.get('/getParkedVehicles', driverController.getTodayParkRequests); 
 
 module.exports = router;
