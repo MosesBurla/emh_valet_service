@@ -84,14 +84,33 @@ const getHistory = async (req, res) => {
   }
 };
 
-const getVehicles = async (req, res) => {
+// Get today's park requests
+const getTodayParkRequests = async (req, res) => {
   try {
-    const vehicles = await Vehicle.find({  status:'parked'});
-    res.json(vehicles);
+    // Get start and end of today
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
+
+    // Query Requests of type 'park' created today
+    const requests = await Request.find({
+      type: 'park',
+      status:'completed',
+      createdAt: { $gte: startOfDay, $lte: endOfDay },
+    })
+      .populate('vehicleId') // include vehicle details
+      .populate('ownerId')   // include owner details
+      .populate('driverId'); // include driver details
+
+    res.json(requests);
   } catch (err) {
+    console.error('Error fetching park requests:', err);
     res.status(500).json({ msg: err.message });
   }
 };
+
 
 
 // const getHistory = async (req, res) => {
@@ -133,4 +152,4 @@ const getParkingLocations = async (req, res) => {
 };
 
 
-module.exports = { getParkingLocations,getIncomingRequests, acceptRequest, markParked, markHandedOver, getHistory,getVehicles };
+module.exports = { getParkingLocations,getIncomingRequests, acceptRequest, markParked, markHandedOver, getHistory, getTodayParkRequests };
