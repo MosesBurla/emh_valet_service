@@ -84,6 +84,7 @@ const getHistory = async (req, res) => {
   }
 };
 
+// Get today's parked vehicles
 const getTodayParkRequests = async (req, res) => {
   try {
     // Get start and end of today
@@ -93,23 +94,35 @@ const getTodayParkRequests = async (req, res) => {
     const endOfDay = new Date();
     endOfDay.setHours(23, 59, 59, 999);
 
-    // Step 1: Find today's completed park requests
-    const requests = await Request.find({
-      type: 'park',
-      status: 'completed',
-      createdAt: { $gte: startOfDay, $lte: endOfDay },
-    }).populate('vehicleId');
+    // Step 1: Get the last request for each vehicle created today
+    const lastRequests = await Request.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: startOfDay, $lte: endOfDay },
+        },
+      },
+      {
+        $sort: { createdAt: -1 }, // latest first
+      },
+      {
+        $group: {
+          _id: "$vehicleId", // group by vehicle
+          lastRequest: { $first: "$$ROOT" }, // pick the latest request per vehicle
+        },
+      },
+    ]);
 
-    // Step 2: Extract vehicle IDs
-    const vehicleIds = requests.map((req) => req.vehicleId?._id).filter(Boolean);
+    // Step 2: Filter only parked vehicles
+    const parkedVehicleIds = lastRequests
+      .filter(r => r.lastRequest.type === "park" && r.lastRequest.status === "completed")
+      .map(r => r._id);
 
-    // Step 3: Fetch vehicles
-    const vehicles = await Vehicle.find({ _id: { $in: vehicleIds } })
+    // Step 3: Get vehicle details
+    const vehicles = await Vehicle.find({ _id: { $in: parkedVehicleIds } });
 
-    // Step 4: Return only vehicles
     res.json(vehicles);
   } catch (err) {
-    console.error('Error fetching today\'s parked vehicles:', err);
+    console.error("Error fetching last parked vehicles:", err);
     res.status(500).json({ msg: err.message });
   }
 };
